@@ -1,9 +1,6 @@
 class Node :
 
-    def __init__(self, line, column, value) :
-        self.line = line
-        self.column = column
-
+    def __init__(self, value) :
         self.value = value
         self.neighbours = []
 
@@ -13,7 +10,11 @@ class Node :
         self.neighbours.append(neighbour)
     
     def isAssigned(self) :
-        return self.value != 0
+        return self.value != "0"
+    
+    def assign(self, value) :
+        self.value = value
+        self.domain = [value]
 
     
 

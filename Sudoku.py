@@ -1,9 +1,11 @@
 class Sudoku :
 
+    MAXIMUM_DOMAIN = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"]
+
     def __init__(self, n_lines = 3, n_columns = 3) :
         self.n_lines = n_lines
         self.n_columns = n_columns
-        self.board =  [
+        self.board = [
             [0, 0, 0, 0, 4, 0, 0, 0, 1],
             [0, 0, 0, 1, 0, 9, 4, 0, 0],
             [0, 0, 0, 0, 5, 0, 0, 6, 7],
@@ -14,17 +16,6 @@ class Sudoku :
             [0, 0, 1, 2, 0, 7, 0, 0, 0],
             [7, 0, 0, 0, 1, 0, 0, 0, 0],
         ]
-        # self.board =  [
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        # ]
     
     def print_board(self) :
         board_size = self.n_lines * self.n_columns
@@ -38,11 +29,26 @@ class Sudoku :
             for c in range(board_size) :
                 if c % self.n_columns == 0 :
                     print("|", end = "")
-                print(f"| {self.board[l][c]} ", end = "")
+                if self.board[l][c] == "0" :
+                    print("|   ", end = "")
+                else :
+                    print(f"| {self.board[l][c]} ", end = "")
             print("||")
         for i in range(board_size*4 + self.n_lines + 2) :
             print("=", end = "")
         print()
-            
+    
+    def read_sudoku_file(self, filename) :
+        file = open(filename)
+        lines = file.readlines()
+
+        sudoku_format = lines.pop(0).strip().split("x")
+        self.n_lines = int(sudoku_format[0])
+        self.n_columns = int(sudoku_format[1])
+
+        self.board = []
+        for line in lines :
+            self.board.append(line.strip().split(" "))
+
                 
 

@@ -14,11 +14,11 @@ class CSP :
         for l in range(sudoku_size) :
             self.graph.append([])
             for c in range(sudoku_size) :
-                node = Node(l, c, self.sudoku.board[l][c])
+                node = Node(self.sudoku.board[l][c])
                 if node.isAssigned() :
                     node.domain = [node.value]
                 else :
-                    node.domain = list(range(1, sudoku_size + 1))
+                    node.domain = self.sudoku.MAXIMUM_DOMAIN[0:sudoku_size]
                 self.graph[l].append(node)
         
         # Relier les noeuds en leur ajoutant des voisins
@@ -43,18 +43,51 @@ class CSP :
     def solve_sudoku(self) :
         self.init_graph()
         self.AC_3()
-        print(self.backtracking_search())
+        solved = self.backtracking_search()
+        if solved :
+            print("Sudoku solved !")
+        else :
+            print("No solution found...")
         self.sudoku.board = self.get_board_from_graph()
         self.sudoku.print_board()
+    
+    def backtracking_search(self) :
+        return self.recursive_backtracking()
+
+    def recursive_backtracking(self) :
+
+        if self.all_assigned() : 
+            return True
+        
+        node = self.select_unassigned_node()
+        self.order_domain_values(node)
+        n_values = len(node.domain)
+        
+        for i in range(n_values) :
+            value = node.domain[i]
+            values_before_assignment, domains_before_assignment = self.get_values_domains_copy()
+            node.assign(value)
+            self.AC_3()
+
+            if not self.is_there_an_empty_domain() :
+                if self.recursive_backtracking() :
+                    return True
+
+            for l in range(len(self.graph)) :
+                for c in range(len(self.graph)) :
+                    self.graph[l][c].domain = domains_before_assignment[l][c]
+                    self.graph[l][c].value = values_before_assignment[l][c]
+                
+        return False
 
     def AC_3(self) :
-        # Initialiser la queue avec tous les arcs des noeuds non assignés
+        # Initialiser la queue avec tous les arcs de l'arbre
         queue = []
         for l in range(len(self.graph)) :
             for c in range(len(self.graph)) :
-                if not self.graph[l][c].isAssigned() :
-                    for neighbour in self.graph[l][c].neighbours :
-                        queue.append([self.graph[l][c], neighbour])
+                for neighbour in self.graph[l][c].neighbours :
+                    queue.append([self.graph[l][c], neighbour])
+
         while queue :
             arc = queue.pop(0)
             if self.remove_inconsistent_values(arc[0], arc[1]) :
@@ -73,39 +106,12 @@ class CSP :
                     removed = True
         
         if len(node_to_update.domain) == 1 :
-            node_to_update.value = node_to_update.domain[0]
+            node_to_update.assign(node_to_update.domain[0])
         
               
         return removed
-    
-    def backtracking_search(self) :
-        return self.recursive_backtracking()
 
-    def recursive_backtracking(self) :
-        if self.all_assigned() : 
-            return True
-        
-        u_nodes = self.get_sorted_unassigned_nodes()
-  
-        for node in u_nodes :
-            if len(node.domain) > 0 :
-                self.assign_value_LCV(node)
-                domains_before_AC_3 = self.get_domains_copy()
-                self.AC_3()
-                if not self.is_there_an_empty_domain() :
-                    if self.recursive_backtracking() :
-                        return True
-                node.value = 0
-                for l in range(len(self.graph)) :
-                    for c in range(len(self.graph)) :
-                        self.graph[l][c].domain = domains_before_AC_3[l][c]
-                for un in u_nodes :
-                    un.value = 0
-        
-        return False
-
-
-    def get_sorted_unassigned_nodes(self) :
+    def select_unassigned_node(self) :
         
         u_nodes = []
         for l in range(len(self.graph)) :
@@ -123,7 +129,7 @@ class CSP :
                 j = j-1
             u_nodes[j+1] = key
 
-        return u_nodes
+        return u_nodes[0]
 
     def MRV_degree_heuristic_comparison(self, n1, n2, unassigned_nodes) :
         # MRV
@@ -135,7 +141,6 @@ class CSP :
             n2_unassigned_neighbours = 0
             for u_node in unassigned_nodes :
                 if u_node in n1.neighbours :
-
                     n1_unassigned_neighbours = n1_unassigned_neighbours + 1
                 if u_node in n2.neighbours :
                     n2_unassigned_neighbours = n2_unassigned_neighbours + 1
@@ -144,37 +149,37 @@ class CSP :
         
         return False
 
-    def assign_value_LCV(self, node) :
-        best_count = None
-        best_value = None
-
-        for value in node.domain :
-            count = 0
-            for ngb in node.neighbours :
-                if value in ngb.domain and not ngb.isAssigned() :
-                    count = count + 1
-
-
-            if best_count is None :
-                best_count = count
-                best_value = value
-            
-            if count < best_count :
-                best_count = count
-                best_value = value
-        
-        node.value = best_value
-        node.domain = [best_value]
+    def order_domain_values(self, node) :
+        # Utilise un tri par insertion
+        for n in range(1, len(node.domain)) :
+            key = node.domain[n]
+            j = n - 1
+            while j>=0 and self.lcv_comparison(node, key, node.domain[j]) :
+                node.domain[j+1] = node.domain[j]
+                j = j-1
+            node.domain[j+1] = key
 
 
+    def lcv_comparison(self, node, value1, value2) :
+        count1 = 0
+        count2 = 0
+        for ngb in node.neighbours :
+            if value1 in ngb.domain and not ngb.isAssigned() :
+                count1 = count1 + 1
+            if value2 in ngb.domain and not ngb.isAssigned() :
+                count2 = count2 + 1
+        return count1 < count2
 
-    def get_domains_copy(self) :
-        copy = []
+    def get_values_domains_copy(self) :
+        domains_copy = []
+        values_copy = []
         for l in range(len(self.graph)) :
-            copy.append([])
+            domains_copy.append([])
+            values_copy.append([])
             for c in range(len(self.graph)) :
-                copy[l].append(self.graph[l][c].domain.copy())
-        return copy
+                domains_copy[l].append(self.graph[l][c].domain.copy())
+                values_copy[l].append(self.graph[l][c].value)
+        return values_copy, domains_copy
 
     def all_assigned(self) : 
         for l in range(len(self.graph)) :
