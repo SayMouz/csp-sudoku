@@ -12,20 +12,25 @@ Deux façons d'exécuter le programme :
 
 ### Générer une grille aléatoire 9x9 :
 
-  python3 Main.py random *difficulty*
-
+```bash
+python3 Main.py random *difficulty*
+```
 Avec *difficulty* un entier entre 1 et 9.
 
 ### Lire un fichier de sudoku :
 
-  python3 Main.py read *filename*
+```bash
+python3 Main.py read *filename*
+```
  
 #### Syntaxe du fichier de sudoku
 
-  *lines*x*columns*
-  X X X X ...
-  X X X X ...
-  ...
+```
+*lines*x*columns*
+X X X X ...
+X X X X ...
+...
+```
   
  - *lines* et *columns* donne la taille d'un "sous carré" du Sudoku. Par exemple pour une grille de taille 9x9, il faut entrer les valeurs 3x3. 
  - 1 <= *lines* x *columns* <= 16. 16 est la taille maximum d'une grille de sudoku.
