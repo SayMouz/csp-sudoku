@@ -10,20 +10,20 @@
 
 Deux façons d'exécuter le programme :
 
-### Générer une grille aléatoire 9x9 :
+### Générer une grille aléatoire 9x9 
 
 ```bash
 python3 Main.py random *difficulty*
 ```
 Avec *difficulty* un entier entre 1 et 9.
 
-### Lire un fichier de sudoku :
+### Lire un fichier de sudoku
 
 ```bash
 python3 Main.py read *filename*
 ```
  
-#### Syntaxe du fichier de sudoku
+#### Syntaxe du fichier de sudoku 
 
 ```
 *lines*x*columns*
