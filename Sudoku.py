@@ -26,7 +26,7 @@ class Sudoku :
             for c in range(board_size) :
                 if c % self.n_columns == 0 :
                     print("|", end = "")
-                if self.board[l][c] == "0" :
+                if str(self.board[l][c]) == "0" :
                     print("|   ", end = "")
                 else :
                     print(f"| {self.board[l][c]} ", end = "")
