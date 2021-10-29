@@ -32,13 +32,13 @@ Avec *difficulty* un entier entre 1 et 9.
  - Les X représentent les cases de la grille. Ils peuvent prendre une valeur de 1 à 9 et de A à G. A et G sont les nombres de 10 à 16. 0 représente une case vide.
  - Exemple :
  
-2x3
-0 0 3 1 0 0
-0 6 0 0 0 0
-0 4 2 3 1 0
-5 0 0 0 0 0
-0 0 0 0 2 0
-0 0 0 0 6 0
+  2x3
+  0 0 3 1 0 0
+  0 6 0 0 0 0
+  0 4 2 3 1 0
+  5 0 0 0 0 0
+  0 0 0 0 2 0
+  0 0 0 0 6 0
 
 Représente cette grille :
 
