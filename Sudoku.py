@@ -1,6 +1,9 @@
 class Sudoku :
     """
     La classe Sudoku représente une grille de Sudoku.
+    Le nombre de lignes et le nombres représentent la taille 
+    d'un sous rectangle du sudoku. 
+    Par exemple un sudoku à 3 lignes et 3 colonnes représente une grille de taille 9x9
     """
 
     def __init__(self, n_lines = 3, n_columns = 3) :
